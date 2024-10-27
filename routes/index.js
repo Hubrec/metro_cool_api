@@ -1,8 +1,24 @@
 const fs = require('fs');
 const path = require('path');
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+
+const metroLineColors = {
+  "1": "#FF0000",
+  "2": "#0000FF",
+  "3": "#00FF00",
+  "4": "#FFFF00",
+  "5": "#800080",
+  "6": "#FFA500",
+  "7": "#A52A2A",
+  "8": "#FFC0CB",
+  "9": "#FF00FF",
+  "10": "#00FFFF",
+  "11": "#000080",
+  "12": "#008000",
+  "13": "#800000",
+};
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -18,12 +34,28 @@ router.get('/api/data/stations', (req, res) => {
     if (line.startsWith('V')) {
       const parts = line.split(';');
       const id = +parts[0].split(' ')[1];
-      const label = parts[0].split(' ').slice(2).join(' ');
+      const label = parts[0].split(' ').slice(2).join(' ').trim();
+      const lineNbr = parts[1].split(' ')[0];
 
-      nodes.push({ id: id, label: label, x: 100, y: 100 });
+      nodes.push({ id: id, label: label, color: metroLineColors[lineNbr], x: 0, y: 0, positioned: false });
     }
   });
 
+  const posPointsData = fs.readFileSync(path.join(__dirname, '../data/pospoints.txt'), 'utf-8');
+  const posLines = posPointsData.split('\n');
+
+  posLines.forEach(line => {
+    const parts = line.split(';');
+    const x = +parts[0];
+    const y = +parts[1];
+    const label = parts[2].replace(/@/g, ' ').trim();
+
+    const node = nodes.find(n => n.label === label && !n.positioned);
+    if (node) {
+      Object.assign(node, { x, y, positioned: true });
+    }
+
+  });
   res.send(nodes);
 });
 
@@ -37,32 +69,25 @@ router.get('/api/data/links', (req, res) => {
       const parts = line.split(' ');
       const from = parts[1];
       const to = parts[2];
-      const value = parts[3];
+      const value = +parts[3];
 
-      links.push({ from: from, to: to, value: value });
+      links.push({ from: from, to: to, time: value });
     }
   });
 
   res.send(links);
 });
 
-router.get('/api/data/positions', (req, res) => {
-  const pointsData = fs.readFileSync(path.join(__dirname, '../data/pospoints.txt'), 'utf-8');
-  const lines = pointsData.split('\n');
-  const links = [];
-
-  lines.forEach(line => {
-    if (line.startsWith('E')) {
-      const parts = line.split(' ');
-      const from = parts[1];
-      const to = parts[2];
-      const time = parts[3];
-
-      links.push({ from: from, to: to, time: time });
+router.get('/api/data/background', (req, res) => {
+  const imagePath = path.join(__dirname, '../data/metrof_r.png');
+  fs.readFile(imagePath, (err, data) => {
+    if (err) {
+      res.status(500).send('Error reading image');
+    } else {
+      res.setHeader('Content-Type', 'image/png');
+      res.send(data);
     }
   });
-
-  res.send(links);
 });
 
 module.exports = router;
