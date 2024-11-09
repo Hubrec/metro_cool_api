@@ -37,7 +37,7 @@ router.get('/api/data/stations', (req, res) => {
       const label = parts[0].split(' ').slice(2).join(' ').trim();
       const lineNbr = parts[1].split(' ')[0];
 
-      nodes.push({ id: id, label: label, color: metroLineColors[lineNbr], x: 0, y: 0, positioned: false });
+      nodes.push({ id: id, label: label, name: label, color: metroLineColors[lineNbr], x: 0, y: 0, positioned: false });
     }
   });
 
@@ -54,8 +54,17 @@ router.get('/api/data/stations', (req, res) => {
     if (node) {
       Object.assign(node, { x, y, positioned: true });
     }
-
   });
+
+  const nameList= [];
+  nodes.forEach(node => {
+    if (nameList.includes(node.label)) {
+      Object.assign(node, { label: ""});
+    } else {
+      nameList.push(node.label);
+    }
+  })
+
   res.send(nodes);
 });
 
@@ -76,18 +85,6 @@ router.get('/api/data/links', (req, res) => {
   });
 
   res.send(links);
-});
-
-router.get('/api/data/background', (req, res) => {
-  const imagePath = path.join(__dirname, '../data/metrof_r.png');
-  fs.readFile(imagePath, (err, data) => {
-    if (err) {
-      res.status(500).send('Error reading image');
-    } else {
-      res.setHeader('Content-Type', 'image/png');
-      res.send(data);
-    }
-  });
 });
 
 module.exports = router;
