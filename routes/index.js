@@ -37,7 +37,7 @@ router.get('/api/data/stations', (req, res) => {
       const label = parts[0].split(' ').slice(2).join(' ').trim();
       const lineNbr = parts[1].split(' ')[0];
 
-      nodes.push({ id: id, label: label, name: label, color: metroLineColors[lineNbr], x: 0, y: 0, positioned: false });
+      nodes.push({ id: id, label: label, name: label, color: metroLineColors[lineNbr], x: 0, y: 0, positioned: false, shouldBeLabeled: true });
     }
   });
 
@@ -59,7 +59,7 @@ router.get('/api/data/stations', (req, res) => {
   const nameList= [];
   nodes.forEach(node => {
     if (nameList.includes(node.label)) {
-      Object.assign(node, { label: ""});
+      Object.assign(node, { shouldBeLabeled: false, label: ""});
     } else {
       nameList.push(node.label);
     }
@@ -76,8 +76,8 @@ router.get('/api/data/links', (req, res) => {
   lines.forEach(line => {
     if (line.startsWith('E')) {
       const parts = line.split(' ');
-      const from = parts[1];
-      const to = parts[2];
+      const from = +parts[1];
+      const to = +parts[2];
       const value = +parts[3];
 
       links.push({ from: from, to: to, time: value });
