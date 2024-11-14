@@ -21,8 +21,8 @@ This project is a web application built with Express.js that visualizes metro st
 
 1. **Clone the repository:**
    ```sh
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/Hubrec/metro_cool_api.git
+   cd metro_cool_api
     ```
    
 2. **Install dependencies:**
@@ -36,4 +36,4 @@ This project is a web application built with Express.js that visualizes metro st
 4. **Access the application:**
 
     Open `http://localhost:3000` in your browser.
-    You now can also setup the [Metro cool](https://github.com/Hubrec/metro_cool) project to use this API.
+    You now may also want setup the [Metro cool](https://github.com/Hubrec/metro_cool) project to use this API.
