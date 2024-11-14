@@ -1,4 +1,4 @@
-# Metro Station Data Visualization
+# Metro Cool API
 
 This project is a web application built with Express.js that visualizes metro station data. It provides an API to fetch station and link data, and renders views using Pug templates. This API is developped for the [Metro cool](https://github.com/Hubrec/metro_cool) project.
 
